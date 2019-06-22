@@ -2,7 +2,7 @@ import { Context } from '../context';
 import { Game } from './../game';
 import { GameCanvas } from './../gameCanvas';
 import { EventDispatcher } from './../eventDispatcher';
-import { ErrorHandler } from './../errorHandler';
+import { TestErrorHandler } from'./testErrorHandler';
 import { TestGameCanvasHTML2D } from './testCanvas';
 
 export class TestUtil {
@@ -27,20 +27,3 @@ export class TestUtil {
         return new EventDispatcher(this.getTestErrorHandler());
     }
 }
-
-export class TestErrorHandler implements ErrorHandler {
-    private _errors: string[] = [];
-
-    handleError(errorMessage: string) {
-        this._errors.push(errorMessage);
-    }
-
-    getErrors(): string[] {
-        return this._errors;
-    }
-
-    reset(): void {
-        this._errors = [];
-    }
-}
-
