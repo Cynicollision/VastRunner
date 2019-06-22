@@ -1,0 +1,23 @@
+{
+  "name": "vast-runner",
+  "version": "1.0.0",
+  "description": "Browser game engine built in TypeScript.",
+  "main": "src/main.ts",
+  "scripts": {
+    "test": "karma start"
+  },
+  "author": "Sean Normoyle",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jasmine": "^3.3.13",
+    "jasmine": "^3.4.0",
+    "jasmine-core": "^3.4.0",
+    "karma": "^4.1.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-jasmine": "^2.0.1",
+    "karma-webpack": "^4.0.2",
+    "ts-loader": "^6.0.2",
+    "typescript": "^3.5.2",
+    "webpack": "^4.34.0"
+  }
+}
