@@ -18,7 +18,7 @@ describe('ActorInstance', () => {
         testContext = TestUtil.getTestContext();
         testActor = new Actor(testContext);
         testRoom = new Room(testContext);
-        testActorInstance = new ActorInstance(testActor, testRoom);
+        testActorInstance = new ActorInstance(testActor, 1);
     });
 
     it('can be instantiated.', () => {

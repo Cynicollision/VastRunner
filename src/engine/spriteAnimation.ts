@@ -1,14 +1,9 @@
+import { SpriteTransformation } from './enum';
 import { GameCanvas } from './gameCanvas';
 import { Sprite, DrawSpriteOptions } from './sprite';
 
-export enum SpriteTransformation {
-    Opacity = 0,
-    Frame = 1,
-    TileX = 2,
-    TileY = 3,
-}
-
 export class SpriteAnimation {
+    private readonly _sprite;
     private transformations: { [index: number]: SpriteTransformation } = {};
     private timer: any;
 
@@ -19,7 +14,9 @@ export class SpriteAnimation {
         return this._paused;
     }
 
-    constructor(readonly sprite: Sprite) {
+    constructor(sprite: Sprite) {
+        this._sprite = sprite;
+
         this.setTransform(SpriteTransformation.Frame, 0);
         this.setTransform(SpriteTransformation.Opacity, 1);
     }
@@ -64,9 +61,9 @@ export class SpriteAnimation {
             this.setTransform(SpriteTransformation.Opacity, options.opacity);
         }
 
-        let [srcX, srcY] = this.sprite.getFrameImageSourceCoords(frame);
+        let [srcX, srcY] = this._sprite.getFrameImageSourceCoords(frame);
         
-        canvasContext.drawImage(this.sprite.image, srcX, srcY, x, y, this.sprite.width, this.sprite.height, options);
+        canvasContext.drawImage(this._sprite.image, srcX, srcY, x, y, this._sprite.width, this._sprite.height, options);
     }
 
     // transformations

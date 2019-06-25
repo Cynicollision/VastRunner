@@ -1,6 +1,8 @@
 import { ActorInstance } from './actorInstance';
-import { GameCanvas } from './gameCanvas';
+import { Boundary } from './boundary';
 import { Context } from './context';
+import { GameCanvas } from './gameCanvas';
+import { Sprite } from './sprite';
 
 interface ActorLifecycleCallback {
     (self: ActorInstance, context: Context): void;
@@ -15,17 +17,34 @@ interface CollisionCallback {
 }
 
 export class Actor {
-    private _context: Context;
+    private readonly _context: Context;
 
     private _onCreate: ActorLifecycleCallback = null;
     private _onStep: ActorLifecycleCallback = null;
     private _onDestroy: ActorLifecycleCallback = null;
     private _onDraw: ActorDrawCallback = null;
 
-    readonly _collisionHandlers: { [index: string]: CollisionCallback } = {};
+    private _sprite: Sprite;
+    public get sprite(): Sprite {
+        return this._sprite;
+    }
+
+    private _boundary: Boundary;
+    public get boundary(): Boundary {
+        return this._boundary;
+    }
+
+    private _collisionHandlers: { [index: string]: CollisionCallback } = {};
+    public get collisionHandlers(): { [index: string]: CollisionCallback } {
+        return this._collisionHandlers;
+    }
     
     constructor(context: Context) {
         this._context = context;
+    }
+
+    setSprite(sprite: Sprite): void {
+        this._sprite = sprite;
     }
 
     onCreate(callback: ActorLifecycleCallback): void {
@@ -63,6 +82,8 @@ export class Actor {
     }
 
     callDraw(self: ActorInstance, canvas: GameCanvas): void {
-        this._onDraw(self, canvas, this._context);
+        if (this._onDraw) {
+            this._onDraw(self, canvas, this._context);
+        }
     }
 }

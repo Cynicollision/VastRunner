@@ -31,7 +31,7 @@ export class Room {
 
     spawn(x: number, y: number, parentActor: Actor): ActorInstance {
         let newInstanceId = this.nextActorInstanceID();
-        let newInstance = new ActorInstance(parentActor, this);
+        let newInstance = new ActorInstance(parentActor, this.nextActorInstanceID());
         newInstance.x = x || 0;
         newInstance.y = y || 0;
 
@@ -47,7 +47,7 @@ export class Room {
         for (let instanceID in this.actorInstanceMap) {
             let instance = this.actorInstanceMap[instanceID];
 
-            if (!actorTypes.length || (actorTypes && actorTypes.indexOf(instance.getParent()) > -1)) {
+            if (!actorTypes.length || (actorTypes && actorTypes.indexOf(instance.parent) > -1)) {
                 instances.push(this.actorInstanceMap[instanceID]);
             }
         }
@@ -56,7 +56,43 @@ export class Room {
     }
 
     step(): void {
-        // TODO
+        this.getInstances().forEach(instance => {
+            let parent = instance.parent;
+
+            if (instance.active) {
+                instance.applyMovement();
+
+                this.checkCollisions(instance);
+
+                parent.callStep(instance);
+            }
+            else {
+                instance.parent.callDestroy(instance);
+                delete this.actorInstanceMap[instance.id];
+            }
+        });
+
+        //this.behaviors.forEach(behavior => behavior.postStep(this));
+    }
+
+    private checkCollisions(selfInstance: ActorInstance): void {
+        let parent = selfInstance.parent;
+        
+        for (let actorName in parent.collisionHandlers) {
+            let callback = parent.collisionHandlers[actorName];
+            let otherActor = this._context.getActor(actorName);
+
+            for (let otherID in this.actorInstanceMap) {
+                let other = this.actorInstanceMap[otherID];
+
+                if (other.parent === otherActor) {
+
+                    if (selfInstance !== other && selfInstance.collidesWith(other)) {
+                        callback(selfInstance, other, this._context);
+                    }
+                }
+            }
+        };
     }
 
     draw(canvas: GameCanvas): void {
@@ -70,20 +106,20 @@ export class Room {
         //}
 
         let orderedInstances = this.getInstances().sort((a, b) => {
-            let animationA = a.getAnimation();
-            let animationB = b.getAnimation();
+            let animationA = a.spriteAnimation;
+            let animationB = b.spriteAnimation;
             return (animationB ? animationB.depth : 0) - (animationA ? animationA.depth : 0);
         });
 
         orderedInstances.forEach(instance => {
             // draw sprites
-            let spriteAnimation = instance.getAnimation();
+            let spriteAnimation = instance.spriteAnimation;
             if (spriteAnimation) {
                 spriteAnimation.draw(canvas, instance.x, instance.y);
             }
 
             // call actor draw event callbacks
-            instance.getParent().callDraw(instance, canvas);
+            instance.parent.callDraw(instance, canvas);
         });
 
         // call room draw event callback

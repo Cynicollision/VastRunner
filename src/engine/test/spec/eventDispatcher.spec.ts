@@ -3,11 +3,13 @@ import { EventDispatcher } from './../../eventDispatcher';
 import { TestUtil } from './../testUtil';
 
 describe('EventDispatcher', () => {
-    let testErrorHandler = TestUtil.getTestErrorHandler();
     let testEventDispatcher: EventDispatcher;
 
+    let testErrorHandler = TestUtil.getTestErrorHandler();
+    let testGameOptions = TestUtil.getTestGameOptions();
+
     beforeEach(() => {
-        testEventDispatcher = new EventDispatcher(testErrorHandler);
+        testEventDispatcher = new EventDispatcher(testErrorHandler, testGameOptions);
     });
 
     it('can be instantiated.', () => {

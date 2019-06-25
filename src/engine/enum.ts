@@ -23,3 +23,10 @@ export enum Key {
     Right = 39,
     Down = 40,
 }
+
+export enum SpriteTransformation {
+    Opacity = 0,
+    Frame = 1,
+    TileX = 2,
+    TileY = 3,
+}

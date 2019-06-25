@@ -1,6 +1,6 @@
-import { Context } from './../../context';
-import { GameCanvas } from './../../gameCanvas';
-import { TestUtil } from './../testUtil';
+import { Context } from '../../context';
+import { GameCanvas } from '../../gameCanvas';
+import { TestUtil } from '../testUtil';
 
 describe('Context', () => {
     let testErrorHandler = TestUtil.getTestErrorHandler();

@@ -1,7 +1,8 @@
 import { Context } from '../context';
-import { Game } from './../game';
+import { Game, GameOptions } from './../game';
 import { GameCanvas } from './../gameCanvas';
 import { EventDispatcher } from './../eventDispatcher';
+import { Room } from '../room';
 import { TestErrorHandler } from'./testErrorHandler';
 import { TestGameCanvasHTML2D } from './testCanvas';
 
@@ -9,6 +10,12 @@ export class TestUtil {
 
     static getTestGame(): Game {
         return new Game(new TestGameCanvasHTML2D());
+    }
+
+    static getTestGameOptions(): GameOptions {
+        return {
+            eventQueueSize: 10,
+        };
     }
 
     static getTestCanvas(): GameCanvas {
@@ -24,6 +31,10 @@ export class TestUtil {
     }
 
     static getTestEventDispatcher(): EventDispatcher {
-        return new EventDispatcher(this.getTestErrorHandler());
+        return new EventDispatcher(this.getTestErrorHandler(), this.getTestGameOptions());
+    }
+
+    static getTestRoom(): Room {
+        return new Room(this.getTestContext());
     }
 }

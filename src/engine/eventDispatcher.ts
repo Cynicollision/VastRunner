@@ -1,7 +1,5 @@
 import { ErrorHandler } from './errorHandler';
-
-// TODO: get passed-in from GameOptions
-const DefaultQueueSize = 50; 
+import { GameOptions } from './game';
 
 export class DeferredEvent {
     private _dispatcher: EventDispatcher;
@@ -57,12 +55,15 @@ export class QueuedEvent {
 }
 
 export class EventDispatcher {
+    private readonly _gameOptions: GameOptions;
     private readonly _errorHandler: ErrorHandler;
+
     private readonly _events: { [index: number]: DeferredEvent } = {};
     private readonly _eventQueue: QueuedEvent[] = [];
 
-    constructor(errorHandler: ErrorHandler) {
+    constructor(errorHandler: ErrorHandler, gameOptions: GameOptions) {
         this._errorHandler = errorHandler;
+        this._gameOptions = gameOptions;
     }
 
     defineEvent(name: string): DeferredEvent {
@@ -79,7 +80,7 @@ export class EventDispatcher {
     }
 
     fireEvents(): void {
-        let subsToFire = this._eventQueue.splice(0, DefaultQueueSize);
+        let subsToFire = this._eventQueue.splice(0, this._gameOptions.eventQueueSize);
 
         subsToFire.forEach(queuedSub => queuedSub.fire());
     }

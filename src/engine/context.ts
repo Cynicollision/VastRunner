@@ -13,8 +13,6 @@ export class Context {
     private readonly _sprites: { [index: number]: Sprite } = {};
     private readonly _rooms: { [index: string]: Room } = {};
 
-    private _currentRoom: Room = null;
-
     constructor(errorHandler: ErrorHandler, eventDispatcher: EventDispatcher) {
         this._errorHandler = errorHandler;
         this._eventDispatcher = eventDispatcher
@@ -53,10 +51,6 @@ export class Context {
 
         this._rooms[name] = new Room(this);
         return this._rooms[name];
-    }
-
-    getCurrentRoom(): Room {
-        return this._currentRoom;
     }
 
     getRoom(name: string): Room {

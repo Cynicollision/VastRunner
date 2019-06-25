@@ -1,7 +1,8 @@
 import { Context } from './context';
-import { GameCanvas } from './gameCanvas';
 import { GameState } from './enum';
+import { GameCanvas } from './gameCanvas';
 import { EventDispatcher } from './eventDispatcher';
+import { Room } from './room';
 
 // TODO: get from GameOptions
 const TargetFPS = 60;
@@ -11,6 +12,7 @@ export class GameRunner {
     private _context: Context;
     private _eventDispatcher: EventDispatcher;
 
+    private _room: Room;
     private _state: GameState;
 
     get isRunning(): boolean {
@@ -23,15 +25,19 @@ export class GameRunner {
         this._eventDispatcher = eventDispatcher;
     }
 
-    start(): void {
+    setRoom(room: Room): void {
+        this._room = room;
+    }
+
+    start(room: Room): void {
+        this.setRoom(room);
+
         let stepSize: number = 1 / TargetFPS;
         let offset: number = 0;
         let previous: number = window.performance.now();
 
         let gameLoop: FrameRequestCallback = (): void => {
-            let room = this._context.getCurrentRoom();
             let current: number = window.performance.now();
-            
             offset += (Math.min(1, (current - previous) / 1000));
             
             while (offset > stepSize) {
@@ -39,8 +45,8 @@ export class GameRunner {
                 if (this.isRunning) {
                     this._eventDispatcher.fireEvents();
 
-                    if (room) {
-                        room.step();
+                    if (this._room) {
+                        this._room.step();
                     }
                 }
                 else {
@@ -50,9 +56,9 @@ export class GameRunner {
                 offset -= stepSize;
             }
 
-            if (room && this.isRunning) {
+            if (this._room && this.isRunning) {
                 this._canvas.clear();
-                room.draw(this._canvas);
+                this._room.draw(this._canvas);
             }
 
             previous = current;
