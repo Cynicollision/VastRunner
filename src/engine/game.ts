@@ -1,11 +1,11 @@
-import { Actor } from './actor';
+import { Actor, ActorOptions } from './actor';
 import { Context } from './context';
 import { ErrorHandler, DefaultErrorHandler } from './errorHandler';
 import { EventDispatcher, DeferredEvent } from './eventDispatcher';
 import { GameCanvas } from './gameCanvas';
 import { GameRunner } from './gameRunner';
 import { Room } from './room';
-import { Sprite } from './sprite';
+import { Sprite, SpriteOptions } from './sprite';
 
 export class GameOptions {
     eventQueueSize?: number;
@@ -58,8 +58,8 @@ export class Game {
         this._options = options;
     }
 
-    defineActor(name: string): Actor {
-        return this._context.defineActor(name);
+    defineActor(name: string, options?: ActorOptions): Actor {
+        return this._context.defineActor(name, options);
     }
 
     defineEvent(name: string): DeferredEvent {
@@ -70,7 +70,7 @@ export class Game {
         return this._context.defineRoom(name);
     }
 
-    defineSprite(name: string): Sprite {
-        return this._context.defineSprite(name);
+    defineSprite(name: string, options?: SpriteOptions): Sprite {
+        return this._context.defineSprite(name, options);
     }
 }

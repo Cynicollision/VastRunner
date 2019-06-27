@@ -3,8 +3,8 @@ import { SpriteAnimation } from './spriteAnimation';
 
 export interface SpriteOptions {
     imageSource: string;
-    height: number;
-    width: number;
+    height?: number;
+    width?: number;
     frameBorder?: number;
 }
 
@@ -35,8 +35,14 @@ export class Sprite {
         return this._height;
     }
 
-    constructor() {
+    constructor(options?: SpriteOptions) {
         this._defaultAnimation = new SpriteAnimation(this);
+
+        if (options && options.imageSource) {
+            this.setImageSource(options.imageSource);
+        }
+
+        // TODO: handle other SpriteOptions
     }
 
     setImageSource(source: string): void {

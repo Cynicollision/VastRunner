@@ -1,4 +1,4 @@
-import { Actor } from './actor';
+import { Actor, ActorOptions } from './actor';
 import { DeferredEvent, EventDispatcher } from './eventDispatcher';
 import { ErrorHandler } from './errorHandler';
 import { Room } from './room';
@@ -18,12 +18,12 @@ export class Context {
         this._eventDispatcher = eventDispatcher
     }
 
-    defineActor(name: string): Actor {
+    defineActor(name: string, options?: ActorOptions): Actor {
         if (this._actors[name]) {
             this.handleError(`Actor ${name} has already been defined.`);
         }
 
-        this._actors[name] = new Actor(this);
+        this._actors[name] = new Actor(this, options);
         return this._actors[name];
     }
 
@@ -66,7 +66,7 @@ export class Context {
             throw new Error(`Sprite ${name} has already been defined.`);
         }
 
-        this._sprites[name] = new Sprite();
+        this._sprites[name] = new Sprite(options);
         return this._sprites[name];
     }
 

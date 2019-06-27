@@ -34,6 +34,8 @@ export class GameCanvasHTML2D implements GameCanvas {
 
     clear() {
         this.canvasContext2D.clearRect(0, 0, this._canvasElement.width, this._canvasElement.height);
+        // TODO: take default background color from GameOptions
+        this.fillArea(0, 0, this._canvasElement.width, this._canvasElement.height, '#FFF');
     }
 
     fill(width: number, height: number, color: string) {

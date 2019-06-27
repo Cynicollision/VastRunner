@@ -4,6 +4,10 @@ import { Context } from './context';
 import { GameCanvas } from './gameCanvas';
 import { Sprite } from './sprite';
 
+export interface ActorOptions {
+    sprite: Sprite;
+}
+
 interface ActorLifecycleCallback {
     (self: ActorInstance, context: Context): void;
 }
@@ -39,8 +43,12 @@ export class Actor {
         return this._collisionHandlers;
     }
     
-    constructor(context: Context) {
+    constructor(context: Context, options?: ActorOptions) {
         this._context = context;
+
+        if (options && options.sprite) {
+            this.setSprite(options.sprite);
+        }
     }
 
     setSprite(sprite: Sprite): void {
