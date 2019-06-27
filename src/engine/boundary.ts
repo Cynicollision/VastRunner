@@ -1,25 +1,24 @@
 import { Sprite } from './sprite';
 
 export class PositionedBoundary {
-    x: number;
-    y: number;
-
-    private height: number;
-    private width: number;
+    private _x: number;
+    private _y: number;
+    private _height: number;
+    private _width: number;
 
     constructor(x: number, y: number, boundary: Boundary) {
-        this.x = x;
-        this.y = y;
-        this.height = boundary.height;
-        this.width = boundary.width;
+        this._x = x;
+        this._y = y;
+        this._height = boundary.height;
+        this._width = boundary.width;
     }
 
     collidesWith(other: PositionedBoundary): boolean {
-        if (this.x > other.x + other.width || other.x >= this.x + this.width) {
+        if (this._x > other._x + other._width || other._x >= this._x + this._width) {
             return false;
         }
 
-        if (this.y > other.y + other.height || other.y >= this.y + this.height) {
+        if (this._y > other._y + other._height || other._y >= this._y + this._height) {
             return false;
         }
 
@@ -27,11 +26,11 @@ export class PositionedBoundary {
     }
 
     containsPosition(x: number, y: number): boolean {
-        if (this.x > x || x > this.x + this.width) {
+        if (this._x > x || x > this._x + this._width) {
             return false;
         }
 
-        if (this.y > y || y > this.y + this.height) {
+        if (this._y > y || y > this._y + this._height) {
             return false;
         }
 
@@ -40,15 +39,20 @@ export class PositionedBoundary {
 }
 
 export class Boundary {
+    height: number;
+    width: number;
 
-    static fromSprite(sprite: Sprite, solid: boolean = false): Boundary {
-        return new Boundary(sprite.height, sprite.width, solid);
+    static fromSprite(sprite: Sprite): Boundary {
+        return new Boundary(sprite.height, sprite.width);
     }
 
-    constructor(public height: number, public width: number, public solid: boolean = false) {
+    constructor(height: number, width: number) {
         if (height <= 0 || width <= 0) {
             throw new Error('Height and width must both be greater than zero.');
         }
+
+        this.height = height;
+        this.width = width;
     }
 
     atPosition(x: number, y: number): PositionedBoundary {

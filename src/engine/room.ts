@@ -4,21 +4,22 @@ import { Context } from './context';
 import { GameCanvas } from './gameCanvas';
 
 interface RoomLifecycleCallback {
-    (selfInstance: Room, args?: any): void;
+    (selfInstance: Room, context: Context, args?: any): void;
 }
 
 interface RoomLifecycleDrawCallback {
-    (selfInstance: Room, canvas: GameCanvas, context: Context, args?: any): void;
+    (selfInstance: Room, context: Context, canvas: GameCanvas, args?: any): void;
 }
 
 export class Room {
     private _context: Context;
 
-    private actorInstanceMap: { [index: number]: ActorInstance } = {};
-    private propertyMap: { [index: string]: any } = {};
+    private readonly _actorInstanceMap: { [index: number]: ActorInstance } = {};
+    private readonly _propertyMap: { [index: string]: any } = {};
     // private behaviors: RoomBehavior[] = [];
-    private onStartCallback: RoomLifecycleCallback;
-    private onDrawCallback: RoomLifecycleDrawCallback;
+    private _onStart: RoomLifecycleCallback;
+    private _onEnd: RoomLifecycleCallback;
+    private _onDraw: RoomLifecycleDrawCallback;
 
     private nextActorInstanceID = (() => {
         let currentID = 0;
@@ -29,13 +30,21 @@ export class Room {
         this._context = context;
     }
 
+    get(key: string): any {
+        return this._propertyMap[key];
+    }
+
+    set(key: string, value: any): void {
+        this._propertyMap[key] = value;
+    }
+
     spawn(x: number, y: number, parentActor: Actor): ActorInstance {
         let newInstanceId = this.nextActorInstanceID();
-        let newInstance = new ActorInstance(parentActor, this.nextActorInstanceID());
+        let newInstance = new ActorInstance(parentActor, newInstanceId);
         newInstance.x = x || 0;
         newInstance.y = y || 0;
 
-        this.actorInstanceMap[newInstanceId] = newInstance;
+        this._actorInstanceMap[newInstanceId] = newInstance;
         parentActor.callCreate(newInstance);
 
         return newInstance;
@@ -44,11 +53,11 @@ export class Room {
     getInstances(actorTypes: Actor[] = []): ActorInstance[] {
         let instances = [];
 
-        for (let instanceID in this.actorInstanceMap) {
-            let instance = this.actorInstanceMap[instanceID];
+        for (let instanceID in this._actorInstanceMap) {
+            let instance = this._actorInstanceMap[instanceID];
 
             if (!actorTypes.length || (actorTypes && actorTypes.indexOf(instance.parent) > -1)) {
-                instances.push(this.actorInstanceMap[instanceID]);
+                instances.push(this._actorInstanceMap[instanceID]);
             }
         }
 
@@ -68,7 +77,7 @@ export class Room {
             }
             else {
                 instance.parent.callDestroy(instance);
-                delete this.actorInstanceMap[instance.id];
+                delete this._actorInstanceMap[instance.id];
             }
         });
 
@@ -82,14 +91,11 @@ export class Room {
             let callback = parent.collisionHandlers[actorName];
             let otherActor = this._context.getActor(actorName);
 
-            for (let otherID in this.actorInstanceMap) {
-                let other = this.actorInstanceMap[otherID];
+            for (let otherID in this._actorInstanceMap) {
+                let other = this._actorInstanceMap[otherID];
 
-                if (other.parent === otherActor) {
-
-                    if (selfInstance !== other && selfInstance.collidesWith(other)) {
-                        callback(selfInstance, other, this._context);
-                    }
+                if (other.parent === otherActor && selfInstance !== other && selfInstance.collidesWith(other)) {
+                    callback(selfInstance, other, this._context);
                 }
             }
         };
@@ -99,7 +105,7 @@ export class Room {
         // TODO: call pre-draw behaviors
         //this.behaviors.forEach(behavior => behavior.preDraw(this, canvasContext));
 
-        // TODO: draw room background
+        // TODO: draw room background (let canvas handle)
         //if (this.background) {
         //    canvasContext.fillArea(-this.background.width, -this.background.height, this.background.width * 3, this.background.height * 3, this.background.canvasColor);
         //    canvasContext.fill(this.background.width, this.background.height, this.background.color);
@@ -123,27 +129,37 @@ export class Room {
         });
 
         // call room draw event callback
-        this._callDraw(canvas);
+        this.callDraw(canvas);
     }
 
     // lifecycle callbacks
     onStart(callback: RoomLifecycleCallback): void {
-        this.onStartCallback = callback;
+        this._onStart = callback;
     }
 
-    _callStart(args?: any): void {
-        if (this.onStartCallback) {
-            this.onStartCallback(this, args);
+    callStart(args?: any): void {
+        if (this._onStart) {
+            this._onStart(this, this._context, args);
+        }
+    }
+
+    onEnd(callback: RoomLifecycleCallback): void {
+        this._onEnd = callback;
+    }
+
+    callEnd(args?: any): void {
+        if (this._onEnd) {
+            this._onEnd(this, this._context, args);
         }
     }
 
     onDraw(callback: RoomLifecycleCallback): void {
-        this.onDrawCallback = callback;
+        this._onDraw = callback;
     }
 
-    _callDraw(canvas: GameCanvas, args?: any): void {
-        if (this.onDrawCallback) {
-            this.onDrawCallback(this, canvas, this._context, args);
+    callDraw(canvas: GameCanvas, args?: any): void {
+        if (this._onDraw) {
+            this._onDraw(this, this._context, canvas, args);
         }
     }
 }

@@ -49,21 +49,23 @@ export class SpriteAnimation {
     }
 
     draw(canvasContext: GameCanvas, x: number, y: number, options: DrawSpriteOptions = {}): void {
-        // frame
-        let frame = this.getTransform(SpriteTransformation.Frame);
-        if (options.frame !== null && options.frame !== undefined) {
-            this.setTransform(SpriteTransformation.Frame, options.frame);
-        }
+        if (this._sprite.image) {
+            // frame
+            let frame = this.getTransform(SpriteTransformation.Frame);
+            if (options.frame !== null && options.frame !== undefined) {
+                this.setTransform(SpriteTransformation.Frame, options.frame);
+            }
 
-        // opacity
-        let opacity = this.getTransform(SpriteTransformation.Opacity);
-        if (options.frame !== null && options.frame !== undefined) {
-            this.setTransform(SpriteTransformation.Opacity, options.opacity);
-        }
+            // opacity
+            let opacity = this.getTransform(SpriteTransformation.Opacity);
+            if (options.frame !== null && options.frame !== undefined) {
+                this.setTransform(SpriteTransformation.Opacity, options.opacity);
+            }
 
-        let [srcX, srcY] = this._sprite.getFrameImageSourceCoords(frame);
-        
-        canvasContext.drawImage(this._sprite.image, srcX, srcY, x, y, this._sprite.width, this._sprite.height, options);
+            let [srcX, srcY] = this._sprite.getFrameImageSourceCoords(frame);
+            
+            canvasContext.drawImage(this._sprite.image, srcX, srcY, x, y, this._sprite.width, this._sprite.height, options);
+        }
     }
 
     // transformations

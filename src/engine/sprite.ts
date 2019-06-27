@@ -42,8 +42,11 @@ export class Sprite {
     setImageSource(source: string): void {
         this._image = new Image();
         this._image.src = source;
-        this._height = this._image.height;
-        this._width = this._image.width;
+
+        this._image.onload = () => {
+            this._height = this._image.height;
+            this._width = this._image.width;
+        };
     }
 
     setSize(width: number, height: number): void {

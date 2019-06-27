@@ -26,7 +26,12 @@ export class GameRunner {
     }
 
     setRoom(room: Room): void {
+        if (this._room) {
+            this._room.callEnd();
+        }
+
         this._room = room;
+        this._room.callStart();
     }
 
     start(room: Room): void {

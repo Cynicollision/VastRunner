@@ -34,7 +34,7 @@ export class Actor {
         return this._boundary;
     }
 
-    private _collisionHandlers: { [index: string]: CollisionCallback } = {};
+    private readonly _collisionHandlers: { [index: string]: CollisionCallback } = {};
     public get collisionHandlers(): { [index: string]: CollisionCallback } {
         return this._collisionHandlers;
     }
@@ -85,5 +85,9 @@ export class Actor {
         if (this._onDraw) {
             this._onDraw(self, canvas, this._context);
         }
+    }
+
+    onCollide(actorName: string, callback: CollisionCallback): void {
+        this.collisionHandlers[actorName] = callback;
     }
 }

@@ -10,6 +10,11 @@ export class ActorInstance {
     private _previousY: number;
     private _state: ActorState;
 
+    speed: number = 0;
+    direction: number = 0;
+    x: number = 0;
+    y: number = 0;
+
     private readonly _id: number;
     public get id(): number {
         return this._id;
@@ -20,14 +25,9 @@ export class ActorInstance {
         return this._parent;
     }
 
-    private _spriteAnimation: SpriteAnimation;
+    private readonly _spriteAnimation: SpriteAnimation;
     public get spriteAnimation(): SpriteAnimation {
         return this._spriteAnimation;
-    }
-
-    private _destroyed = false;
-    public get destroyed() { 
-        return this._destroyed;
     }
 
     get active(): boolean {
@@ -42,11 +42,6 @@ export class ActorInstance {
         return (this.x !== this._previousX || this.y !== this._previousY);
     }
 
-    speed: number = 0;
-    direction: number = 0;
-    x: number = 0;
-    y: number = 0;
-
     constructor(parent: Actor, id: number) {
         this._state = ActorState.Active;
         this._parent = parent;
@@ -57,24 +52,8 @@ export class ActorInstance {
         }
     }
 
-    callCreate(): void {
-        this._parent.callCreate(this);
-    }
-
-    callStep(): void {
-        this._parent.callStep(this);
-    }
-
-    callDestroy(): void {
-        this._parent.callDestroy(this);
-    }
-
-    callDraw(canvas: GameCanvas): void {
-        this._parent.callDraw(this, canvas);
-    }
-
     destroy(): void {
-        this._destroyed = true;
+        this._state = ActorState.Destroyed;
         this._parent.callDestroy(this);
     }
 
