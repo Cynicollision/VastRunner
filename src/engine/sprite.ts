@@ -35,24 +35,16 @@ export class Sprite {
         return this._height;
     }
 
-    constructor(options?: SpriteOptions) {
+    constructor(options: SpriteOptions) {
         this._defaultAnimation = new SpriteAnimation(this);
-
-        if (options && options.imageSource) {
-            this.setImageSource(options.imageSource);
-        }
-
-        // TODO: handle other SpriteOptions
+        this.setImageSource(options.imageSource);
+        this._height = options.height;
+        this._width = options.width;
     }
 
     setImageSource(source: string): void {
         this._image = new Image();
         this._image.src = source;
-
-        this._image.onload = () => {
-            this._height = this._image.height;
-            this._width = this._image.width;
-        };
     }
 
     setSize(width: number, height: number): void {

@@ -91,7 +91,7 @@ describe('Room', () => {
     it('calls the "draw" lifecycle callback for all Actor Instances and their Sprites on each frame.', () => {
         let onDrawInstanceSpy = spyOn(testActor, 'callDraw');
         let canvas = TestUtil.getTestCanvas();
-        testActor.setSprite(new Sprite());
+        testActor.setSprite(TestUtil.getTestSprite());
 
         let instance = testRoom.spawn(10, 10, testActor);
         let onDrawSpriteSpy = spyOn(instance.spriteAnimation, 'draw');

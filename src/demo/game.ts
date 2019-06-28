@@ -12,6 +12,8 @@ setTimeout(() => threeSecondsLater.fire({ message: 'Foo!' }), 3000);
 // Sprites
 let playerShipSprite = demo.defineSprite('Player', {
     imageSource: './resources/playerShip3_blue.png',
+    height: 75,
+    width: 98,
 });
 
 // Actors
@@ -19,8 +21,14 @@ let ship = demo.defineActor('Ship', {
     sprite: playerShipSprite,
 });
 
+ship.setBoundaryFromSprite(playerShipSprite);
+
 ship.onCreate((self, context) => {
     self.speed = 4;
+});
+
+ship.onClick((self, context, event) => {
+    self.destroy();
 });
 
 ship.onStep((self, context) => {

@@ -4,6 +4,7 @@ import { ErrorHandler, DefaultErrorHandler } from './errorHandler';
 import { EventDispatcher, DeferredEvent } from './eventDispatcher';
 import { GameCanvas } from './gameCanvas';
 import { GameRunner } from './gameRunner';
+import { EventHandler, InputHandler, PointerInputEvent } from './input';
 import { Room } from './room';
 import { Sprite, SpriteOptions } from './sprite';
 
@@ -26,7 +27,10 @@ export class Game {
     private _context: Context;
     private _errorHandler: ErrorHandler;
     private _eventDispatcher: EventDispatcher;
+    private _inputHandler: InputHandler;
     private _runner: GameRunner;
+
+    private currentRoomClickHandler: EventHandler<PointerInputEvent>;
 
     get context(): Context {
         return this._context;
@@ -37,16 +41,20 @@ export class Game {
         this._options = Defaults;
         
         this._errorHandler = new DefaultErrorHandler();
+        this._inputHandler = new InputHandler();
+
         this._eventDispatcher = new EventDispatcher(this._errorHandler, this._options);
-        this._context = new Context(this._errorHandler, this._eventDispatcher);
-        this._runner = new GameRunner(this._canvas, this._context, this._eventDispatcher);
+        this._context = new Context(this._errorHandler, this._eventDispatcher, this._inputHandler);
+        this._runner = new GameRunner(this._canvas, this._eventDispatcher);
     }
 
     start(room: Room): void {
+        this.registerInput(room);
         this._runner.start(room);
     }
 
     setRoom(room: Room): void {
+        this.registerInput(room);
         this._runner.setRoom(room);
     }
 
@@ -70,7 +78,16 @@ export class Game {
         return this._context.defineRoom(name);
     }
 
-    defineSprite(name: string, options?: SpriteOptions): Sprite {
+    defineSprite(name: string, options: SpriteOptions): Sprite {
         return this._context.defineSprite(name, options);
+    }
+
+    private registerInput(room: Room): void {
+         // dipose previous room's click handler
+         if (this.currentRoomClickHandler) {
+            this.currentRoomClickHandler.dispose();
+        }
+
+        this.currentRoomClickHandler = this._inputHandler.registerClickHandler(ev => room.handleClick(ev));
     }
 }

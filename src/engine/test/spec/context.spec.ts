@@ -5,10 +5,12 @@ import { TestUtil } from '../testUtil';
 describe('Context', () => {
     let testErrorHandler = TestUtil.getTestErrorHandler();
     let testEventDispatcher = TestUtil.getTestEventDispatcher();
+    let testInputHandler = TestUtil.getTestInputHandler();
+
     let testContext: Context;
 
     beforeEach(() => {
-        testContext = new Context(testErrorHandler, testEventDispatcher);
+        testContext = new Context(testErrorHandler, testEventDispatcher, testInputHandler);
     });
 
     it('can be instantiated.', () => {
@@ -28,7 +30,12 @@ describe('Context', () => {
     });
 
     it('can define a Sprite', () => {
-        testContext.defineSprite('TestSprite');
+        testContext.defineSprite('TestSprite', {
+            imageSource: 'none',
+            height: 32,
+            width: 32,
+        });
+
         let testSprite = testContext.getSprite('TestSprite');
         expect(testSprite).toBeDefined();
     });

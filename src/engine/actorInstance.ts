@@ -88,4 +88,8 @@ export class ActorInstance {
     setPositionRelative(x: number, y: number): void {
         this.setPosition(this.x + x, this.y + y);
     }
+
+    occupiesPosition(x: number, y: number): boolean {
+        return this.boundary ? this.boundary.atPosition(this.x, this.y).containsPosition(x, y) : false;
+    }
 }

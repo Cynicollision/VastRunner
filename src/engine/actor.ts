@@ -2,6 +2,7 @@ import { ActorInstance } from './actorInstance';
 import { Boundary } from './boundary';
 import { Context } from './context';
 import { GameCanvas } from './gameCanvas';
+import { PointerInputEvent } from './input';
 import { Sprite } from './sprite';
 
 export interface ActorOptions {
@@ -16,6 +17,10 @@ interface ActorDrawCallback {
     (self: ActorInstance, canvas: GameCanvas, context: Context): void;
 }
 
+interface ActorClickEventCallback {
+    (self: ActorInstance, context: Context, event: PointerInputEvent): void;
+}
+
 interface CollisionCallback {
     (self: ActorInstance, other: ActorInstance, context: Context)   : void;
 }
@@ -23,10 +28,14 @@ interface CollisionCallback {
 export class Actor {
     private readonly _context: Context;
 
+    // lifecycle callbacks
     private _onCreate: ActorLifecycleCallback = null;
     private _onStep: ActorLifecycleCallback = null;
     private _onDestroy: ActorLifecycleCallback = null;
     private _onDraw: ActorDrawCallback = null;
+
+    // input callbacks
+    private _onClick: ActorClickEventCallback;
 
     private _sprite: Sprite;
     public get sprite(): Sprite {
@@ -49,6 +58,10 @@ export class Actor {
         if (options && options.sprite) {
             this.setSprite(options.sprite);
         }
+    }
+
+    setBoundaryFromSprite(sprite: Sprite): void {
+        this._boundary = Boundary.fromSprite(sprite);
     }
 
     setSprite(sprite: Sprite): void {
@@ -97,5 +110,15 @@ export class Actor {
 
     onCollide(actorName: string, callback: CollisionCallback): void {
         this.collisionHandlers[actorName] = callback;
+    }
+
+    onClick(callback: ActorClickEventCallback): void {
+        this._onClick = callback;
+    }
+
+    callClick(selfInstance: ActorInstance, event: PointerInputEvent): void {
+        if (this._onClick) {
+            this._onClick(selfInstance, this._context, event);
+        }
     }
 }

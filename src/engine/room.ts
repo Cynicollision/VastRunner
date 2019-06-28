@@ -2,6 +2,7 @@ import { Actor } from './actor';
 import { ActorInstance } from './actorInstance';
 import { Context } from './context';
 import { GameCanvas } from './gameCanvas';
+import { PointerInputEvent } from './input';
 
 interface RoomLifecycleCallback {
     (selfInstance: Room, context: Context, args?: any): void;
@@ -161,5 +162,30 @@ export class Room {
         if (this._onDraw) {
             this._onDraw(this, this._context, canvas, args);
         }
+    }
+
+    // TODO: test
+    getInstancesAtPosition(x: number, y: number): ActorInstance[] {
+        return this.getInstances().filter(instance => instance.occupiesPosition(x, y));
+    }
+
+    handleClick(event: PointerInputEvent): void {
+        // call pre-click behaviors
+        //this.behaviors.forEach(behavior => behavior.preHandleClick(event));
+        
+        // pass click event to actor instances
+        let clickX = event.x;
+        let clickY = event.y;
+
+        this.getInstancesAtPosition(clickX, clickY).forEach(instance => {
+            let parent = instance.parent;
+
+            if (instance.occupiesPosition(clickX, clickY)) {
+                parent.callClick(instance, event);
+            }
+        });
+
+        // call post-click behaviors
+        //this.behaviors.forEach(behavior => behavior.postHandleClick(event));
     }
 }

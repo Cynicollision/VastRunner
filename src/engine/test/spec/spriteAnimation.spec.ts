@@ -1,13 +1,15 @@
 
 import { Sprite } from './../../sprite';
 import { SpriteAnimation } from './../../spriteAnimation';
+import { TestUtil } from './../testUtil';
 
 describe('SpriteAnimation', () => {
     let testParentSprite: Sprite;
     let testSpriteAnimation: SpriteAnimation;
 
     beforeEach(() => {
-        testParentSprite = new Sprite();
+        testParentSprite = TestUtil.getTestSprite();
+
         testSpriteAnimation = new SpriteAnimation(testParentSprite);
     });
 

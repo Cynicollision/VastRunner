@@ -9,7 +9,6 @@ const TargetFPS = 60;
 
 export class GameRunner {
     private _canvas: GameCanvas;
-    private _context: Context;
     private _eventDispatcher: EventDispatcher;
 
     private _room: Room;
@@ -19,9 +18,8 @@ export class GameRunner {
         return this._state === GameState.Running;
     }
 
-    constructor(canvas: GameCanvas, context: Context, eventDispatcher: EventDispatcher) {
+    constructor(canvas: GameCanvas, eventDispatcher: EventDispatcher) {
         this._canvas = canvas;
-        this._context = context;
         this._eventDispatcher = eventDispatcher;
     }
 

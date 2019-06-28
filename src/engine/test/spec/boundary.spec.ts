@@ -1,11 +1,12 @@
 import { Boundary } from './../../boundary';
-import { Sprite } from './../../sprite';
+import { TestUtil } from './../testUtil';
 
 describe('Boundary', () => {
 
     it('can be created from Sprite dimensions', () => {
-        let sprite = new Sprite();
+        let sprite = TestUtil.getTestSprite();
         sprite.setSize(32, 48);
+        
         let boundary = Boundary.fromSprite(sprite);
 
         expect(boundary.height).toEqual(sprite.height);
