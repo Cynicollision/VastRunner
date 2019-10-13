@@ -3,6 +3,7 @@ import { ActorInstance } from './actorInstance';
 import { Context } from './context';
 import { GameCanvas } from './gameCanvas';
 import { PointerInputEvent } from './input';
+import { View } from './view';
 
 interface RoomLifecycleCallback {
     (selfInstance: Room, context: Context, args?: any): void;
@@ -14,10 +15,10 @@ interface RoomLifecycleDrawCallback {
 
 export class Room {
     private _context: Context;
+    private _view: View;
 
     private readonly _actorInstanceMap: { [index: number]: ActorInstance } = {};
     private readonly _propertyMap: { [index: string]: any } = {};
-    // private behaviors: RoomBehavior[] = [];
     private _onStart: RoomLifecycleCallback;
     private _onEnd: RoomLifecycleCallback;
     private _onDraw: RoomLifecycleDrawCallback;
@@ -29,6 +30,7 @@ export class Room {
 
     constructor(context: Context) {
         this._context = context;
+        this._view = new View();
     }
 
     get(key: string): any {
@@ -52,12 +54,29 @@ export class Room {
     }
 
     getInstances(actorTypes: Actor[] = []): ActorInstance[] {
+        return this.getInstancesInternal(!!actorTypes.length, actorTypes, false);
+    }
+
+    getInstancesAtPosition(x: number, y: number, actorTypes: Actor[] = []): ActorInstance[] {
+        return this.getInstancesInternal(!!actorTypes.length, actorTypes, true, x, y);
+    }
+
+    private getInstancesInternal(filterActors: boolean, actorTypes: Actor[], filterPosition: boolean, x?: number, y?: number): ActorInstance[] {
         let instances = [];
 
         for (let instanceID in this._actorInstanceMap) {
             let instance = this._actorInstanceMap[instanceID];
+            let exclude = false;
 
-            if (!actorTypes.length || (actorTypes && actorTypes.indexOf(instance.parent) > -1)) {
+            if (filterActors) {
+                exclude = (exclude || (actorTypes && actorTypes.indexOf(instance.parent) === -1));
+            }
+
+            if (!exclude && filterPosition) {
+                exclude = (exclude || !instance.occupiesPosition(x, y));
+            }
+
+            if (!exclude) {
                 instances.push(this._actorInstanceMap[instanceID]);
             }
         }
@@ -81,8 +100,6 @@ export class Room {
                 delete this._actorInstanceMap[instance.id];
             }
         });
-
-        //this.behaviors.forEach(behavior => behavior.postStep(this));
     }
 
     private checkCollisions(selfInstance: ActorInstance): void {
@@ -103,15 +120,6 @@ export class Room {
     }
 
     draw(canvas: GameCanvas): void {
-        // TODO: call pre-draw behaviors
-        //this.behaviors.forEach(behavior => behavior.preDraw(this, canvasContext));
-
-        // TODO: draw room background (let canvas handle)
-        //if (this.background) {
-        //    canvasContext.fillArea(-this.background.width, -this.background.height, this.background.width * 3, this.background.height * 3, this.background.canvasColor);
-        //    canvasContext.fill(this.background.width, this.background.height, this.background.color);
-        //}
-
         let orderedInstances = this.getInstances().sort((a, b) => {
             let animationA = a.spriteAnimation;
             let animationB = b.spriteAnimation;
@@ -119,17 +127,14 @@ export class Room {
         });
 
         orderedInstances.forEach(instance => {
-            // draw sprites
             let spriteAnimation = instance.spriteAnimation;
             if (spriteAnimation) {
                 spriteAnimation.draw(canvas, instance.x, instance.y);
             }
 
-            // call actor draw event callbacks
             instance.parent.callDraw(instance, canvas);
         });
 
-        // call room draw event callback
         this.callDraw(canvas);
     }
 
@@ -164,15 +169,7 @@ export class Room {
         }
     }
 
-    // TODO: test
-    getInstancesAtPosition(x: number, y: number): ActorInstance[] {
-        return this.getInstances().filter(instance => instance.occupiesPosition(x, y));
-    }
-
     handleClick(event: PointerInputEvent): void {
-        // call pre-click behaviors
-        //this.behaviors.forEach(behavior => behavior.preHandleClick(event));
-        
         // pass click event to actor instances
         let clickX = event.x;
         let clickY = event.y;
@@ -184,8 +181,5 @@ export class Room {
                 parent.callClick(instance, event);
             }
         });
-
-        // call post-click behaviors
-        //this.behaviors.forEach(behavior => behavior.postHandleClick(event));
     }
 }

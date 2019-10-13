@@ -44,11 +44,11 @@ export class TestUtil {
         return new Room(this.getTestContext());
     }
 
-    static getTestSprite(): Sprite {
+    static getTestSprite(height?: number, width?: number): Sprite {
         return new Sprite({
             imageSource: 'none',
-            height: 32,
-            width: 32,
+            height: height || 32,
+            width: width || 32,
         });
     }
 }

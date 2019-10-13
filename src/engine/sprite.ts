@@ -37,14 +37,16 @@ export class Sprite {
 
     constructor(options: SpriteOptions) {
         this._defaultAnimation = new SpriteAnimation(this);
-        this.setImageSource(options.imageSource);
         this._height = options.height;
         this._width = options.width;
+        this.setImageSource(options.imageSource);
     }
 
     setImageSource(source: string): void {
-        this._image = new Image();
-        this._image.src = source;
+        if (source) {
+            this._image = new Image();
+            this._image.src = source;
+        }
     }
 
     setSize(width: number, height: number): void {

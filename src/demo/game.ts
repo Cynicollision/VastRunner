@@ -1,6 +1,6 @@
-import { Game, VastRunner } from './../engine/vastrunner';
+import { VastRunner } from './../engine/vastrunner';
 
-let demo: Game = VastRunner.newHTMLCanvas2DGame('game');
+let demo = VastRunner.newHTMLCanvas2DGame('game');
 
 // Events
 let threeSecondsLater = demo.defineEvent('SomeEvent');

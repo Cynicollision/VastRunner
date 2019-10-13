@@ -1,7 +1,6 @@
 import { Actor } from './../../actor';
 import { Context } from './../../context';
 import { Room } from './../../room';
-import { Sprite } from './../../sprite';
 import { TestUtil } from './../testUtil';
 
 describe('Room', () => {
@@ -46,6 +45,39 @@ describe('Room', () => {
 
         expect(testRoom.getInstances([testActor]).length).toBe(3);
         expect(testRoom.getInstances([anotherActor]).length).toBe(4);
+        expect(testRoom.getInstances([anotherActor, testActor]).length).toBe(7);
+    });
+
+    it('can get all Actor Instances that occupy a position.', () => {
+        let anotherActor = new Actor(testContext);
+
+        testActor.setBoundaryFromSprite(TestUtil.getTestSprite());
+        anotherActor.setBoundaryFromSprite(TestUtil.getTestSprite());
+
+        testRoom.spawn(0, 0, testActor);
+        testRoom.spawn(16, 16, anotherActor);
+
+        let instances = testRoom.getInstancesAtPosition(10, 10);
+        expect(instances.length).toBe(1);
+
+        instances = testRoom.getInstancesAtPosition(20, 20);
+        expect(instances.length).toBe(2);        
+    });
+
+    it('can get Actor Instances of certain types that occupy a position.', () => {
+        let anotherActor = new Actor(testContext);
+
+        testActor.setBoundaryFromSprite(TestUtil.getTestSprite());
+        anotherActor.setBoundaryFromSprite(TestUtil.getTestSprite());
+
+        testRoom.spawn(0, 0, testActor);
+        testRoom.spawn(16, 16, anotherActor);
+
+        let instances = testRoom.getInstancesAtPosition(35, 35, [ testActor ]);
+        expect(instances.length).toBe(0);
+
+        instances = testRoom.getInstancesAtPosition(35, 35, [ anotherActor ]);
+        expect(instances.length).toBe(1);
     });
 
     it('calls the "create" lifecycle callback when spawning an Actor Instance.', () => {
