@@ -15,9 +15,6 @@ module.exports = function (config) {
     preprocessors: {
       'src/engine/test/**/*.ts': ['webpack']
     },
-    // mime: { 
-    //   'text/x-typescript': ['ts','tsx'],
-    // },
     reporters: ['progress'],
     port: 9876,
     colors: true,
