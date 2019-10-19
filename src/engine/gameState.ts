@@ -1,10 +1,13 @@
 import { GameCanvas } from './gameCanvas';
 import { Room } from './room';
 
-
 export class GameState {
     private readonly _propertyMap: { [index: string]: any } = {};
+    
     private _room: Room;
+    get currentRoom(): Room {
+        return this._room;
+    }
 
     get(key: string): any {
         return this._propertyMap[key];

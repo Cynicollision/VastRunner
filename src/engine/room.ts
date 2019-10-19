@@ -8,11 +8,11 @@ import { MathUtil } from './mathUtil';
 import { View } from './view';
 
 interface RoomLifecycleCallback {
-    (selfInstance: Room, context: Context, args?: any): void;
+    (selfInstance: Room, args?: any): void;
 }
 
 interface RoomLifecycleDrawCallback {
-    (selfInstance: Room, context: Context, canvas: GameCanvas, args?: any): void;
+    (selfInstance: Room, canvas: GameCanvas, args?: any): void;
 }
 
 export class Room {
@@ -24,6 +24,8 @@ export class Room {
     private readonly _propertyMap: { [index: string]: any } = {};
     private _onStart: RoomLifecycleCallback;
     private _onEnd: RoomLifecycleCallback;
+    private _preStep: RoomLifecycleCallback;
+    private _postStep: RoomLifecycleCallback;
     private _onDraw: RoomLifecycleDrawCallback;
 
     private nextActorInstanceID = (() => {
@@ -89,6 +91,8 @@ export class Room {
     }
 
     step(): void {
+        this.callPreStep();
+
         this.getInstances().forEach(instance => {
 
             if (instance.isAlive) {
@@ -100,6 +104,8 @@ export class Room {
                 this.destroyInstance(instance);
             }
         });
+
+        this.callPostStep();
     }
     
     private applyInstanceMovement(actorInstance: ActorInstance): void {
@@ -142,6 +148,8 @@ export class Room {
             return (animationB ? animationB.depth : 0) - (animationA ? animationA.depth : 0);
         });
 
+        canvas.origin = [-this.view.x, -this.view.y];
+
         orderedInstances.forEach(instance => {
             let spriteAnimation = instance.spriteAnimation;
             if (spriteAnimation) {
@@ -161,7 +169,7 @@ export class Room {
 
     callStart(args?: any): void {
         if (this._onStart) {
-            this._onStart(this, this._context, args);
+            this._onStart(this, args);
         }
     }
 
@@ -171,7 +179,27 @@ export class Room {
 
     callEnd(args?: any): void {
         if (this._onEnd) {
-            this._onEnd(this, this._context, args);
+            this._onEnd(this, args);
+        }
+    }
+
+    preStep(callback: RoomLifecycleCallback): void {
+        this._preStep = callback;
+    }
+
+    callPreStep(args?: any): void {
+        if (this._preStep) {
+            this._preStep(this, args);
+        }
+    }
+
+    postStep(callback: RoomLifecycleCallback): void {
+        this._postStep = callback;
+    }
+
+    callPostStep(args?: any): void {
+        if (this._postStep) {
+            this._postStep(this, args);
         }
     }
 
@@ -181,14 +209,14 @@ export class Room {
 
     callDraw(canvas: GameCanvas, args?: any): void {
         if (this._onDraw) {
-            this._onDraw(this, this._context, canvas, args);
+            this._onDraw(this, canvas, args);
         }
     }
 
     handleClick(event: PointerInputEvent): void {
-        // pass click event to actor instances
-        let clickX = event.x;
-        let clickY = event.y;
+        // pass click event to actor instances, compensating for view position
+        let clickX = event.x + this.view.x;
+        let clickY = event.y + this.view.y;
 
         this.getInstancesAtPosition(clickX, clickY).forEach(instance => {
             let parent = instance.parent;

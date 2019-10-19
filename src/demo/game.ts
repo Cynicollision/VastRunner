@@ -2,7 +2,7 @@ import { VastRunner } from './../engine/vastrunner';
 
 let demo = VastRunner.newHTMLCanvas2DGame('game', { 
     backgroundColor: '#000', 
-    fullScreen: true,
+    //fullScreen: true,
 });
 
 // Events
@@ -42,9 +42,19 @@ ship.onStep((self, context) => {
 
 let demoRoom = demo.defineRoom('Demo');
 
-for (let i = 0; i < 10; i++) {
-    demoRoom.spawn(64 * i, 64 * i, ship);
-}
+demoRoom.postStep(self => {
+    let ships = self.getInstances([ship]);
 
+    if (ships.length === 0) {
+        createShips();
+    }
+})
 
+createShips();
 demo.start(demoRoom);
+
+function createShips() {
+    for (let i = 0; i < 10; i++) {
+        demoRoom.spawn(64 * i, 64 * i, ship);
+    }
+}

@@ -147,6 +147,22 @@ describe('Room', () => {
         expect(onStartSpy).toHaveBeenCalled();
     });
 
+    it('calls its own "pre-step" lifecycle callback when starting this room.', () => {
+        let preStepSpy = spyOn(testRoom, 'callPreStep');
+
+        testRoom.step();
+
+        expect(preStepSpy).toHaveBeenCalled();
+    });
+
+    it('calls its own "post-step" lifecycle callback when starting this room.', () => {
+        let postStepSpy = spyOn(testRoom, 'callPostStep');
+
+        testRoom.step();
+
+        expect(postStepSpy).toHaveBeenCalled();
+    });
+
     it('calls its own "draw" lifecycle callback.', () => {
         let onDrawSpy = spyOn(testRoom, 'callDraw');
 
