@@ -1,8 +1,11 @@
 import { VastRunner } from './../engine/vastrunner';
 
-let demo = VastRunner.newHTMLCanvas2DGame('game', { 
-    backgroundColor: '#000', 
-    //fullScreen: true,
+let demo = VastRunner.newHTMLCanvas2DGame('game', {
+    targetFPS: 60,
+    canvasOptions: { 
+        backgroundColor: '#000', 
+        fullScreen: true,
+    },
 });
 
 // Events
