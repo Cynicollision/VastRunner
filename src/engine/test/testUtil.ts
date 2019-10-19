@@ -1,17 +1,17 @@
 import { Context } from '../context';
 import { Game, GameOptions } from './../game';
-import { GameCanvas } from './../gameCanvas';
+import { Canvas, GameCanvas } from './../gameCanvas';
 import { EventDispatcher } from './../eventDispatcher';
 import { InputHandler } from './../input';
 import { Room } from '../room';
 import { TestErrorHandler } from'./testErrorHandler';
-import { TestGameCanvasHTML2D } from './testCanvas';
+import { TestCanvas, TestGameCanvas } from './testCanvas';
 import { Sprite } from '../sprite';
 
 export class TestUtil {
 
     static getTestGame(): Game {
-        return new Game(new TestGameCanvasHTML2D());
+        return new Game(new TestGameCanvas());
     }
 
     static getTestGameOptions(): GameOptions {
@@ -20,8 +20,12 @@ export class TestUtil {
         };
     }
 
-    static getTestCanvas(): GameCanvas {
-        return new TestGameCanvasHTML2D()
+    static getTestCanvas(): Canvas {
+        return new TestCanvas();
+    }
+
+    static getTestGameCanvas(): GameCanvas {
+        return new TestGameCanvas();
     }
 
     static getTestContext(): Context {

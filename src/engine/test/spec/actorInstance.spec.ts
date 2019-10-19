@@ -14,7 +14,7 @@ describe('ActorInstance', () => {
     let testRoom: Room;
 
     beforeEach(() => {
-        testGame = new Game(TestUtil.getTestCanvas())
+        testGame = new Game(TestUtil.getTestGameCanvas())
         testContext = TestUtil.getTestContext();
         testActor = new Actor(testContext);
         testRoom = new Room(testContext);

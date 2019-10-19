@@ -1,7 +1,27 @@
-import { GameCanvas, CanvasDrawOptions } from './../gameCanvas';
+import { Canvas, GameCanvas, CanvasDrawOptions } from './../gameCanvas';
 
-export class TestGameCanvasHTML2D implements GameCanvas {
+export class TestCanvas implements Canvas {
+    height = 0;
+    width = 0;
+
+    getContext(contextId: string): CanvasRenderingContext2D {
+        return <CanvasRenderingContext2D>{};
+    }
+}
+
+export class TestGameCanvas implements GameCanvas {
+    readonly backgroundColor: 'notarealcanvas';
     readonly origin: [number, number] = [0, 0];
+
+    private _testCanvas: TestCanvas = new TestCanvas();
+
+    get height(): number {
+        return this._testCanvas.height;
+    }
+
+    get width(): number {
+        return this._testCanvas.width;
+    }
 
     clear() {
     }

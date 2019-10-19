@@ -1,6 +1,9 @@
 import { VastRunner } from './../engine/vastrunner';
 
-let demo = VastRunner.newHTMLCanvas2DGame('game');
+let demo = VastRunner.newHTMLCanvas2DGame('game', { 
+    backgroundColor: '#000', 
+    fullScreen: true,
+});
 
 // Events
 let threeSecondsLater = demo.defineEvent('SomeEvent');
@@ -35,7 +38,7 @@ ship.onStep((self, context) => {
     if (self.x > 800 || self.x < -100) {
         self.speed *= -1;
     }
-})
+});
 
 let demoRoom = demo.defineRoom('Demo');
 

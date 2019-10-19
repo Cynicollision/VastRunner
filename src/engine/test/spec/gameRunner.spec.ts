@@ -2,7 +2,7 @@ import { GameRunner } from './../../gameRunner';
 import { TestUtil } from './../testUtil';
 
 describe('GameRunner', () => {
-    let testCanvas = TestUtil.getTestCanvas();
+    let testCanvas = TestUtil.getTestGameCanvas();
     let testEventDispatcher = TestUtil.getTestEventDispatcher();
     let gameRunner: GameRunner;
 

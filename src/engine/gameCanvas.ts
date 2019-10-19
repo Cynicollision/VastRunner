@@ -1,6 +1,8 @@
 export interface GameCanvasOptions {
-    height: number;
-    width: number;
+    backgroundColor?: string;
+    fullScreen?: boolean;
+    height?: number;
+    width?: number;
 }
 
 export interface CanvasDrawOptions {
@@ -9,8 +11,17 @@ export interface CanvasDrawOptions {
     tileY?: boolean;
 }
 
+export interface Canvas {
+    getContext(contextId: string): CanvasRenderingContext2D;
+    height: number;
+    width: number;
+}
+
 export interface GameCanvas {
+    backgroundColor: string;
     origin: [number, number];
+    readonly height: number;
+    readonly width: number;
     clear(): void;
     fill(width: number, height: number, color: string): void;
     fillArea(x: number, y: number, width: number, height: number, color: string): void;
@@ -18,24 +29,61 @@ export interface GameCanvas {
 }
 
 export class GameCanvasHTML2D implements GameCanvas {
-    private readonly _canvasElement: HTMLCanvasElement;
+    private readonly _canvas: Canvas;
 
+    backgroundColor: string = '#fff';
     origin: [number, number] = [0, 0];
 
-    
-    constructor(canvasElementID: string, options?: GameCanvasOptions) {
-        this._canvasElement = <HTMLCanvasElement>document.getElementById(canvasElementID);
-        // TODO: process GameCanvasOptions
+    get height(): number {
+        return this._canvas.height;
+    }
+
+    get width(): number {
+        return this._canvas.width;
     }
 
     private get canvasContext2D(): CanvasRenderingContext2D {
-        return this._canvasElement.getContext('2d');
+        return this._canvas.getContext('2d');
+    }
+    
+    constructor(canvasElement: Canvas, options?: GameCanvasOptions) {
+        this._canvas = canvasElement;
+        
+        if (options) {
+            this.useOptions(options);
+        }
+    }
+
+    private useOptions(options: GameCanvasOptions) {
+        let canvasHeight = this.height;
+        let canvasWidth = this.width;
+
+        // Canvas size
+        if (options.fullScreen) {
+            canvasHeight = window.innerHeight;
+            canvasWidth = window.innerWidth;
+        }
+        else if (options.height && options.width) {
+            canvasHeight = options.height;
+            canvasWidth = options.width;
+        }
+        
+        // Other options
+        if (options.backgroundColor) {
+            this.backgroundColor = options.backgroundColor;
+        }
+
+        this.setCanvasSize(canvasHeight, canvasWidth);
+    }
+
+    private setCanvasSize(height: number, width: number) {
+        this._canvas.height = height;
+        this._canvas.width = width;
     }
 
     clear() {
-        this.canvasContext2D.clearRect(0, 0, this._canvasElement.width, this._canvasElement.height);
-        // TODO: take default background color from GameOptions
-        this.fillArea(0, 0, this._canvasElement.width, this._canvasElement.height, '#FFF');
+        this.canvasContext2D.clearRect(0, 0, this._canvas.width, this._canvas.height);
+        this.fillArea(0, 0, this._canvas.width, this._canvas.height, this.backgroundColor);
     }
 
     fill(width: number, height: number, color: string) {
