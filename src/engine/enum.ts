@@ -10,7 +10,7 @@ export enum Direction {
     Up = 270,
 }
 
-export enum GameState {
+export enum State {
     Running = 1,
     Paused = 2,
 }

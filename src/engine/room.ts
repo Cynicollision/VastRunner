@@ -2,7 +2,9 @@ import { Actor } from './actor';
 import { ActorInstance } from './actorInstance';
 import { Context } from './context';
 import { GameCanvas } from './gameCanvas';
+import { GameState } from './gameState';
 import { PointerInputEvent } from './input';
+import { MathUtil } from './mathUtil';
 import { View } from './view';
 
 interface RoomLifecycleCallback {
@@ -14,8 +16,9 @@ interface RoomLifecycleDrawCallback {
 }
 
 export class Room {
-    private _context: Context;
-    private _view: View;
+    private readonly _context: Context;
+    private readonly _gameState: GameState;
+    readonly view: View;
 
     private readonly _actorInstanceMap: { [index: number]: ActorInstance } = {};
     private readonly _propertyMap: { [index: string]: any } = {};
@@ -28,9 +31,10 @@ export class Room {
         return (() => ++currentID);
     })();
 
-    constructor(context: Context) {
+    constructor(context: Context, gameState: GameState) {
         this._context = context;
-        this._view = new View();
+        this._gameState = gameState;
+        this.view = new View();
     }
 
     get(key: string): any {
@@ -86,34 +90,46 @@ export class Room {
 
     step(): void {
         this.getInstances().forEach(instance => {
-            let parent = instance.parent;
 
-            if (instance.active) {
-                instance.applyMovement();
-
-                this.checkCollisions(instance);
-
-                parent.callStep(instance);
+            if (instance.isAlive) {
+                this.applyInstanceMovement(instance);
+                this.checkCollisions(instance, this._context);
+                instance.parent.callStep(instance);
             }
             else {
-                instance.parent.callDestroy(instance);
-                delete this._actorInstanceMap[instance.id];
+                this.destroyInstance(instance);
             }
         });
     }
+    
+    private applyInstanceMovement(actorInstance: ActorInstance): void {
+        if (actorInstance.speed !== 0) {
+            let offsetX = Math.round(MathUtil.getLengthDirectionX(actorInstance.speed * 100, actorInstance.direction) / 100);
+            let offsetY = Math.round(MathUtil.getLengthDirectionY(actorInstance.speed * 100, actorInstance.direction) / 100);
+    
+            if (offsetX !== 0 || offsetY !== 0) {
+                actorInstance.setPositionRelative(offsetX, offsetY);
+            }
+        }
+    }
 
-    private checkCollisions(selfInstance: ActorInstance): void {
+    destroyInstance(instance: ActorInstance) {
+        instance.parent.callDestroy(instance);
+        delete this._actorInstanceMap[instance.id];
+    }
+
+    private checkCollisions(selfInstance: ActorInstance, context): void {
         let parent = selfInstance.parent;
         
         for (let actorName in parent.collisionHandlers) {
             let callback = parent.collisionHandlers[actorName];
-            let otherActor = this._context.getActor(actorName);
+            let otherActor = context.getActor(actorName);
 
             for (let otherID in this._actorInstanceMap) {
                 let other = this._actorInstanceMap[otherID];
 
                 if (other.parent === otherActor && selfInstance !== other && selfInstance.collidesWith(other)) {
-                    callback(selfInstance, other, this._context);
+                    callback(selfInstance, other, this._gameState);
                 }
             }
         };

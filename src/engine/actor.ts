@@ -1,7 +1,7 @@
 import { ActorInstance } from './actorInstance';
 import { Boundary } from './boundary';
-import { Context } from './context';
 import { GameCanvas } from './gameCanvas';
+import { GameState } from './gameState';
 import { PointerInputEvent } from './input';
 import { Sprite } from './sprite';
 
@@ -10,23 +10,23 @@ export interface ActorOptions {
 }
 
 interface ActorLifecycleCallback {
-    (self: ActorInstance, context: Context): void;
+    (self: ActorInstance, context: GameState): void;
 }
 
 interface ActorDrawCallback {
-    (self: ActorInstance, canvas: GameCanvas, context: Context): void;
+    (self: ActorInstance, canvas: GameCanvas, context: GameState): void;
 }
 
 interface ActorClickEventCallback {
-    (self: ActorInstance, context: Context, event: PointerInputEvent): void;
+    (self: ActorInstance, context: GameState, event: PointerInputEvent): void;
 }
 
 interface CollisionCallback {
-    (self: ActorInstance, other: ActorInstance, context: Context)   : void;
+    (self: ActorInstance, other: ActorInstance, context: GameState)   : void;
 }
 
 export class Actor {
-    private readonly _context: Context;
+    private readonly _gameState: GameState;
 
     // lifecycle callbacks
     private _onCreate: ActorLifecycleCallback = null;
@@ -52,8 +52,8 @@ export class Actor {
         return this._collisionHandlers;
     }
     
-    constructor(context: Context, options?: ActorOptions) {
-        this._context = context;
+    constructor(gameState: GameState, options?: ActorOptions) {
+        this._gameState = gameState;
 
         if (options && options.sprite) {
             this.setSprite(options.sprite);
@@ -74,7 +74,7 @@ export class Actor {
 
     callCreate(self: ActorInstance): void {
         if (this._onCreate) {
-            this._onCreate(self, this._context);
+            this._onCreate(self, this._gameState);
         }
     }
 
@@ -84,7 +84,7 @@ export class Actor {
 
     callStep(self: ActorInstance): void {
         if (this._onStep) {
-            this._onStep(self, this._context);
+            this._onStep(self, this._gameState);
         }
     }
 
@@ -94,7 +94,7 @@ export class Actor {
 
     callDestroy(self: ActorInstance): void {
         if (this._onDestroy) {
-            this._onDestroy(self, this._context);
+            this._onDestroy(self, this._gameState);
         }
     }
 
@@ -104,7 +104,7 @@ export class Actor {
 
     callDraw(self: ActorInstance, canvas: GameCanvas): void {
         if (this._onDraw) {
-            this._onDraw(self, canvas, this._context);
+            this._onDraw(self, canvas, this._gameState);
         }
     }
 
@@ -118,7 +118,7 @@ export class Actor {
 
     callClick(selfInstance: ActorInstance, event: PointerInputEvent): void {
         if (this._onClick) {
-            this._onClick(selfInstance, this._context, event);
+            this._onClick(selfInstance, this._gameState, event);
         }
     }
 }

@@ -3,11 +3,12 @@ import { Actor } from './../../actor';
 import { TestUtil } from './../testUtil';
 
 describe('Actor', () => {
-    let testContext = TestUtil.getTestContext();
+    let testGameState = TestUtil.getTestGameState();
+
     let testActor: Actor;
 
     beforeEach(() => {
-        testActor = new Actor(testContext);
+        testActor = new Actor(testGameState);
     });
 
     it('can be instantiated.', () => {

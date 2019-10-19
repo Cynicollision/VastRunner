@@ -1,7 +1,8 @@
 import { Context } from '../context';
+import { EventDispatcher } from './../eventDispatcher';
 import { Game, GameOptions } from './../game';
 import { Canvas, GameCanvas } from './../gameCanvas';
-import { EventDispatcher } from './../eventDispatcher';
+import { GameState } from '../gameState';
 import { InputHandler } from './../input';
 import { Room } from '../room';
 import { TestErrorHandler } from'./testErrorHandler';
@@ -28,8 +29,12 @@ export class TestUtil {
         return new TestGameCanvas();
     }
 
+    static getTestGameState(): GameState {
+        return new GameState();
+    }
+
     static getTestContext(): Context {
-        return new Context(this.getTestErrorHandler(), this.getTestEventDispatcher(), this.getTestInputHandler());
+        return new Context(this.getTestErrorHandler(), this.getTestEventDispatcher(), this.getTestGameState(), this.getTestInputHandler());
     }
 
     static getTestErrorHandler(): TestErrorHandler {
@@ -45,7 +50,7 @@ export class TestUtil {
     }
 
     static getTestRoom(): Room {
-        return new Room(this.getTestContext());
+        return new Room(this.getTestContext(), this.getTestGameState());
     }
 
     static getTestSprite(height?: number, width?: number): Sprite {

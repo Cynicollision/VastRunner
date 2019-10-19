@@ -8,7 +8,7 @@ import { SpriteAnimation } from './spriteAnimation';
 export class ActorInstance {
     private _previousX: number;
     private _previousY: number;
-    private _state: ActorState;
+    private _isAlive: boolean = true;
 
     speed: number = 0;
     direction: number = 0;
@@ -30,8 +30,8 @@ export class ActorInstance {
         return this._spriteAnimation;
     }
 
-    get active(): boolean {
-        return (this._state === ActorState.Active);
+    get isAlive(): boolean {
+        return this._isAlive;
     }
 
     get boundary(): Boundary {
@@ -43,7 +43,6 @@ export class ActorInstance {
     }
 
     constructor(parent: Actor, id: number) {
-        this._state = ActorState.Active;
         this._parent = parent;
         this._id = id;
 
@@ -53,23 +52,11 @@ export class ActorInstance {
     }
 
     destroy(): void {
-        this._state = ActorState.Destroyed;
+        this._isAlive = false;
         this._parent.callDestroy(this);
     }
 
-    applyMovement(): void {
-        if (this.speed !== 0) {
-            let offsetX = Math.round(MathUtil.getLengthDirectionX(this.speed * 100, this.direction) / 100);
-            let offsetY = Math.round(MathUtil.getLengthDirectionY(this.speed * 100, this.direction) / 100);
-    
-            if (offsetX !== 0 || offsetY !== 0) {
-                this.setPositionRelative(offsetX, offsetY);
-            }
-        }
-    }
-
     collidesWith(other: ActorInstance): boolean {
-
         if (this.hasMoved && this.boundary && other.boundary) {
             return this.boundary.atPosition(this.x, this.y).collidesWith(other.boundary.atPosition(other.x, other.y));
         }

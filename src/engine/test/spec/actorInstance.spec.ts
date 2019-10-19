@@ -1,23 +1,22 @@
-
 import { Actor } from './../../actor';
 import { ActorInstance } from './../../actorInstance';
 import { Context } from '../../context';
-import { Game } from './../../game';
 import { Room } from './../../room';
 import { TestUtil } from './../testUtil';
+import { GameState } from '../../gameState';
 
 describe('ActorInstance', () => {
     let testActor: Actor;
     let testActorInstance: ActorInstance;
     let testContext: Context;
-    let testGame: Game;
+    let testGameState: GameState;
     let testRoom: Room;
 
     beforeEach(() => {
-        testGame = new Game(TestUtil.getTestGameCanvas())
         testContext = TestUtil.getTestContext();
-        testActor = new Actor(testContext);
-        testRoom = new Room(testContext);
+        testGameState = TestUtil.getTestGameState();
+        testActor = new Actor(testGameState);
+        testRoom = new Room(testContext, testGameState);
         testActorInstance = new ActorInstance(testActor, 1);
     });
 

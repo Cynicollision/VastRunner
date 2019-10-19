@@ -1,17 +1,22 @@
 import { Actor } from './../../actor';
-import { Context } from './../../context';
+import { Context } from '../../context';
+import { GameState } from '../../gameState';
 import { Room } from './../../room';
 import { TestUtil } from './../testUtil';
 
 describe('Room', () => {
-    let testContext: Context;
+    let testGameState: GameState;
     let testActor: Actor;
+    let testContext: Context;
+
     let testRoom: Room;
 
     beforeEach(() => {
+        testGameState = TestUtil.getTestGameState();
+        testActor = new Actor(testGameState);
         testContext = TestUtil.getTestContext();
-        testActor = new Actor(testContext);
-        testRoom = new Room(testContext);
+
+        testRoom = new Room(testContext, testGameState);
     });
 
     it('can be instantiated.', () => {
@@ -33,7 +38,7 @@ describe('Room', () => {
     });
 
     it('can get spawned Actor Instances of a specific Actor type.', () => {
-        let anotherActor = new Actor(testContext);
+        let anotherActor = new Actor(testGameState);
 
         testRoom.spawn(0, 0, testActor);
         testRoom.spawn(0, 0, testActor);
@@ -49,7 +54,7 @@ describe('Room', () => {
     });
 
     it('can get all Actor Instances that occupy a position.', () => {
-        let anotherActor = new Actor(testContext);
+        let anotherActor = new Actor(testGameState);
 
         testActor.setBoundaryFromSprite(TestUtil.getTestSprite());
         anotherActor.setBoundaryFromSprite(TestUtil.getTestSprite());
@@ -65,7 +70,7 @@ describe('Room', () => {
     });
 
     it('can get Actor Instances of certain types that occupy a position.', () => {
-        let anotherActor = new Actor(testContext);
+        let anotherActor = new Actor(testGameState);
 
         testActor.setBoundaryFromSprite(TestUtil.getTestSprite());
         anotherActor.setBoundaryFromSprite(TestUtil.getTestSprite());
@@ -152,7 +157,7 @@ describe('Room', () => {
 
     it('calls its own "end" lifecycle callback when changing to another rooms.', () => {
         let onEndSpy = spyOn(testRoom, 'callEnd');
-        let nextRoom = new Room(testContext);
+        let nextRoom = new Room(testContext, testGameState);
 
         let game = TestUtil.getTestGame();
         game.start(testRoom);

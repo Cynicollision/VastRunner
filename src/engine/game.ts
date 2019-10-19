@@ -2,31 +2,36 @@ import { Actor, ActorOptions } from './actor';
 import { Context } from './context';
 import { ErrorHandler, DefaultErrorHandler } from './errorHandler';
 import { EventDispatcher, DeferredEvent } from './eventDispatcher';
-import { GameCanvas } from './gameCanvas';
+import { GameCanvas, GameCanvasOptions } from './gameCanvas';
 import { GameRunner } from './gameRunner';
 import { EventHandler, InputHandler, PointerInputEvent } from './input';
 import { Room } from './room';
 import { Sprite, SpriteOptions } from './sprite';
+import { GameState } from './gameState';
 
 export class GameOptions {
+    canvasOptions?: GameCanvasOptions;
     eventQueueSize?: number;
-    fullscreen?: boolean;
     targetFPS?: number;
 }
 
 const Defaults: GameOptions = {
     eventQueueSize: 50,
-    fullscreen: false,
     targetFPS: 60,
+    canvasOptions: {
+        fullScreen: false,
+        height: 640,
+        width: 480,
+    },
 };
 
 export class Game {
     private _canvas: GameCanvas;
     private _options: GameOptions;
-
     private _context: Context;
     private _errorHandler: ErrorHandler;
     private _eventDispatcher: EventDispatcher;
+    private _gameState: GameState;
     private _inputHandler: InputHandler;
     private _runner: GameRunner;
 
@@ -36,16 +41,16 @@ export class Game {
         return this._context;
     }
 
-    constructor(canvas: GameCanvas) {
+    constructor(canvas: GameCanvas, options?: GameOptions) {
         this._canvas = canvas;
-        this._options = Defaults;
+        this._options = options || Defaults;
         
         this._errorHandler = new DefaultErrorHandler();
+        this._gameState = new GameState();
         this._inputHandler = new InputHandler();
-
         this._eventDispatcher = new EventDispatcher(this._errorHandler, this._options);
-        this._context = new Context(this._errorHandler, this._eventDispatcher, this._inputHandler);
-        this._runner = new GameRunner(this._canvas, this._eventDispatcher);
+        this._context = new Context(this._errorHandler, this._eventDispatcher, this._gameState, this._inputHandler);
+        this._runner = new GameRunner(this._canvas, this._eventDispatcher, this._options, this._gameState);
     }
 
     start(room: Room): void {
@@ -55,7 +60,7 @@ export class Game {
 
     setRoom(room: Room): void {
         this.registerInput(room);
-        this._runner.setRoom(room);
+        this._gameState.setRoom(room);
     }
 
     useErrorHandler(handler: ErrorHandler): void {
@@ -83,8 +88,7 @@ export class Game {
     }
 
     private registerInput(room: Room): void {
-         // dipose previous room's click handler
-         if (this.currentRoomClickHandler) {
+        if (this.currentRoomClickHandler) {
             this.currentRoomClickHandler.dispose();
         }
 

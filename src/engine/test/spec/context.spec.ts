@@ -5,12 +5,13 @@ import { TestUtil } from '../testUtil';
 describe('Context', () => {
     let testErrorHandler = TestUtil.getTestErrorHandler();
     let testEventDispatcher = TestUtil.getTestEventDispatcher();
+    let testGameState = TestUtil.getTestGameState();
     let testInputHandler = TestUtil.getTestInputHandler();
 
     let testContext: Context;
 
     beforeEach(() => {
-        testContext = new Context(testErrorHandler, testEventDispatcher, testInputHandler);
+        testContext = new Context(testErrorHandler, testEventDispatcher, testGameState, testInputHandler);
     });
 
     it('can be instantiated.', () => {
