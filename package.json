@@ -15,9 +15,9 @@
     "karma": "^4.1.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^2.0.1",
-    "karma-webpack": "^4.0.2",
-    "ts-loader": "^6.0.2",
+    "karma-webpack": "^5.0.0",
+    "ts-loader": "^9.4.2",
     "typescript": "^3.5.2",
-    "webpack": "^4.34.0"
+    "webpack": "^5.75.0"
   }
 }
